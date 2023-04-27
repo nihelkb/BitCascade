@@ -120,21 +120,24 @@ public class DownloaderImpl {
         DownloaderImpl down = null;
         try {
             // TODO 1: localiza el registry en el host y puerto indicado
+            Registry registry = LocateRegistry.getRegistry(host, port);
             // y obtiene la referencia remota al tracker asignándola
             // a esta variable:
-            Tracker trck = null;
+            Tracker trck = (Tracker) registry.lookup(name);
 
             // comprobamos si ha obtenido bien la referencia:
             System.out.println("el nombre del nodo del tracker es: " + trck.getName());
             // TODO 1: obtiene la información del fichero mediante el
 	    // método lookupFile del Tracker.
-            FileInfo finf = null; // asigna resultado de lookupFile
+            FileInfo finf = trck.lookupFile(file); // asigna resultado de lookupFile
             if (finf==null) { // comprueba resultado
                 // si null: no se ha publicado ese fichero
                 System.err.println("Fichero no publicado");
                 System.exit(1);
             }
             // TODO 1: crea un objeto de la clase DownloaderImpl
+            DownloaderImpl downl = new DownloaderImpl(name, file, finf);
+
 
             // TODO 3: usa el método addLeech del tracker para añadirse
         }

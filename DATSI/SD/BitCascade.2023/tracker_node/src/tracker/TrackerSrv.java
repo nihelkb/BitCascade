@@ -13,6 +13,8 @@ import interfaces.Tracker;
 import interfaces.Seed;
 import interfaces.Leech;
 import interfaces.FileInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 // guarda la información de los ficheros publicados asociando el nombre
 // del fichero con un objeto de la clase FileInfo que contiene esa información
@@ -21,10 +23,12 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
     public static final long serialVersionUID=1234567890L;
     String name;
     // TODO 1: añadir los campos que se requieran
+    Map<String, FileInfo> files;     //Map(NombreFichero, DatosFichero)
     
     public TrackerSrv(String n) throws RemoteException {
         name = n;
         // TODO 1: inicializar campos adicionales
+        files = new HashMap<String, FileInfo>();        
     }
     // NO MODIFICAR: solo para depurar
     public String getName() throws RemoteException {
@@ -35,12 +39,14 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
     public synchronized boolean announceFile(Seed publisher, String fileName, int blockSize, int numBlocks) throws RemoteException {
         // TODO 1: se crea un objeto FileInfo con la información del fichero
 	// y se inserta en el mapa
+        FileInfo fileInfo = new FileInfo(publisher, blockSize, numBlocks);
+        FileInfo oldFileInfo = files.put(fileName, fileInfo);
         System.out.println(publisher.getName() + " ha publicado " + fileName);
-        return false;
+        return (oldFileInfo == null) ? true : false;
     }
     // TODO 1: obtiene acceso a la metainformación de un fichero
     public synchronized FileInfo lookupFile(String fileName) throws RemoteException {
-        return null;
+        return files.get(fileName);
     }
     // TODO 3: se añade un nuevo leech a ese fichero (tercera fase)
     public boolean addLeech(Leech leech, String fileName) throws RemoteException {
@@ -56,7 +62,9 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
         try {
             TrackerSrv srv = new TrackerSrv(args[1]);
             // TODO 1: localiza el registry en el puerto recibido en args[0]]
+            Registry registry = LocateRegistry.getRegistry(Integer.parseInt(args[0]));
 	    // y da de alta el servicio bajo el nombre "BitCascade"
+            registry.rebind(args[1], srv);
         }
         catch (Exception e) {
             System.err.println("Tracker exception:");

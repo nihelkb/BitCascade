@@ -63,7 +63,7 @@ public class Publisher extends UnicastRemoteObject implements Seed {
             Registry registry = LocateRegistry.getRegistry(args[0], Integer.parseInt(args[1]));
             // y obtiene la referencia remota al tracker asignándola
             // a esta variable:
-            Tracker trck = (Tracker) registry.lookup(args[2]);
+            Tracker trck = (Tracker) registry.lookup("BitCascade");
 
             // comprobamos si ha obtenido bien la referencia:
             System.out.println("el nombre del nodo del tracker es: " + trck.getName());

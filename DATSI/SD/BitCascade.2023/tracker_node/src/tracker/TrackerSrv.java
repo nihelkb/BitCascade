@@ -13,7 +13,10 @@ import interfaces.Tracker;
 import interfaces.Seed;
 import interfaces.Leech;
 import interfaces.FileInfo;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 // guarda la información de los ficheros publicados asociando el nombre
@@ -24,11 +27,13 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
     String name;
     // TODO 1: añadir los campos que se requieran
     Map<String, FileInfo> files;     //Map(NombreFichero, DatosFichero)
+    List<Leech> leeches;
     
     public TrackerSrv(String n) throws RemoteException {
         name = n;
         // TODO 1: inicializar campos adicionales
         files = new HashMap<String, FileInfo>();        
+        leeches = new ArrayList<Leech>();
     }
     // NO MODIFICAR: solo para depurar
     public String getName() throws RemoteException {
@@ -55,7 +60,9 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
     }
     // TODO 3: se añade un nuevo leech a ese fichero (tercera fase)
     public boolean addLeech(Leech leech, String fileName) throws RemoteException {
-        return false;
+        FileInfo fileinfo = files.get(fileName);
+        LinkedList<Leech> fileLeeches = fileinfo.getLeechList();
+        return fileLeeches.add(leech);
     }
     static public void main (String args[])  {
         if (args.length!=2) {

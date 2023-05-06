@@ -39,10 +39,15 @@ class TrackerSrv extends UnicastRemoteObject implements Tracker  {
     public synchronized boolean announceFile(Seed publisher, String fileName, int blockSize, int numBlocks) throws RemoteException {
         // TODO 1: se crea un objeto FileInfo con la información del fichero
 	// y se inserta en el mapa
-        FileInfo fileInfo = new FileInfo(publisher, blockSize, numBlocks);
-        FileInfo oldFileInfo = files.put(fileName, fileInfo);
-        System.out.println(publisher.getName() + " ha publicado " + fileName);
-        return (oldFileInfo == null) ? true : false;
+        boolean nonPublished = true;
+        if(files.containsKey(fileName)){
+            nonPublished = false;
+        }else{
+            FileInfo fileInfo = new FileInfo(publisher, blockSize, numBlocks);
+            files.put(fileName, fileInfo);
+            System.out.println(publisher.getName() + " ha publicado " + fileName);
+        }  
+        return nonPublished;
     }
     // TODO 1: obtiene acceso a la metainformación de un fichero
     public synchronized FileInfo lookupFile(String fileName) throws RemoteException {
